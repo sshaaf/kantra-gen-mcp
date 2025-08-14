@@ -1,13 +1,14 @@
 [![Build and Push Backend](https://github.com/sshaaf/kantra-gen-mcp/actions/workflows/build-and-push.yml/badge.svg)](https://github.com/sshaaf/kantra-gen-mcp/actions/workflows/build-and-push.yml)
 [![Java 21](https://img.shields.io/badge/Java-21-blue.svg)](https://openjdk.org/projects/jdk/21/)
-[![Gradle 8](https://img.shields.io/badge/Maven-8-green.svg)](https://maven.apache.org/)
+[![Maven 3](https://img.shields.io/badge/Maven-3-green.svg)](https://maven.apache.org/)
 [![Quarkus 3](https://img.shields.io/badge/Quarkus-3-blue.svg)](https://quarkus.io/)
+[![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 
 # An MCP Server for Konveyor Kantra to generate rules and more.
 
 A Model Context Protocol (MCP) server for Kantra rule generation.
 
-## 🚀 Why This Project is Awesome
+## 🚀 Why This Project!
 
 This MCP server revolutionizes how you generate Kantra rules by bringing the power of AI directly into your development workflow. Here's why it's a game-changer:
 
