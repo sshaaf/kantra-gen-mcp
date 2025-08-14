@@ -1,11 +1,6 @@
 name: Semantic Release
 
 on:
-  workflow_run:
-    workflows: ["Build and Push"]
-    types:
-      - completed
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:
