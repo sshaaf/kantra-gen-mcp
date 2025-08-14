@@ -1,0 +1,53 @@
+name: Semantic Release
+
+on:
+  workflow_run:
+    workflows: ["Build and Push"]
+    types:
+      - completed
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  semantic-release:
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download artifacts from build workflow
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Copy artifacts to target directory
+        run: |
+          mkdir -p target/quarkus-app
+          cp -r artifacts/kantra-gen-mcp-jar/* target/quarkus-app/
+          cp artifacts/kantra-gen-mcp-linux/* target/
+          cp artifacts/kantra-gen-mcp-macos/* target/
+          cp artifacts/kantra-gen-mcp-windows/* target/
+
+      - name: Run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run release
