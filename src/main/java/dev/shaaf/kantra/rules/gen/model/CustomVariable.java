@@ -1,4 +1,4 @@
-package dev.shaaf.kantra.rules.gen.core.model;
+package dev.shaaf.kantra.rules.gen.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
