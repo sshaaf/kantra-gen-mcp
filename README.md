@@ -4,6 +4,40 @@
 [![Quarkus 3](https://img.shields.io/badge/Quarkus-3-blue.svg)](https://quarkus.io/)
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 
+## Table of Contents
+- [An MCP Server for Konveyor Kantra to generate rules and more.](#an-mcp-server-for-konveyor-kantra-to-generate-rules-and-more)
+  - [Why This Project](#-why-this-project)
+    - [Seamless AI Integration](#-seamless-ai-integration)
+    - [Supercharged Productivity](#-supercharged-productivity)
+    - [Developer Experience](#-developer-experience)
+  - [Conceptual Architecture](#-conceptual-architecture)
+    - [How It Works](#-how-it-works)
+    - [Available Tools](#-available-tools)
+  - [Real-World Benefits](#-real-world-benefits)
+    - [For Migration Projects](#for-migration-projects)
+    - [For Development Teams](#for-development-teams)
+    - [For Organizations](#for-organizations)
+  - [Getting started - configuration](#getting-started---configuration)
+    - [Cursor](#cursor)
+    - [Claude Code](#claude-code)
+    - [VSCode](#vscode)
+    - [Goose CLI](#goose-cli)
+    - [Uber Jar](#uber-jar)
+  - [Build and Release](#build-and-release)
+    - [Build Workflow](#build-workflow)
+    - [Semantic Release for Contributors.](#semantic-release-for-contributors)
+      - [Commit Message Format](#commit-message-format)
+      - [Examples](#examples)
+      - [Release Process](#release-process)
+  - [Development](#development)
+    - [Prerequisites](#prerequisites)
+    - [Local Build](#local-build)
+    - [Semantic Release](#semantic-release)
+    - [GitHub Actions](#github-actions)
+  - [Artifacts](#artifacts)
+
+
+
 # An MCP Server for Konveyor Kantra to generate rules and more.
 
 A Model Context Protocol (MCP) server for Kantra rule generation.
