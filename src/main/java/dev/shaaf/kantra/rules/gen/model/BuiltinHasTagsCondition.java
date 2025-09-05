@@ -7,7 +7,7 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record BuiltinHasTagsCondition(
-    @JsonProperty("builtin.hasTags") List<String> tags,
+    List<String> tags,
     String as,
     String from,
     Boolean ignore,

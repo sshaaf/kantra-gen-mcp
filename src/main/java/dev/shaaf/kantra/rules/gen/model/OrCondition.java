@@ -2,12 +2,14 @@ package dev.shaaf.kantra.rules.gen.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonCreator;
 
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record OrCondition(
-    @JsonProperty("or") List<Condition> conditions,
+    List<Condition> conditions,
     String as,
     String from,
     Boolean ignore,
@@ -16,5 +18,15 @@ public record OrCondition(
     
     public OrCondition(List<Condition> conditions) {
         this(conditions, null, null, null, null);
+    }
+    
+    @JsonCreator
+    public static OrCondition fromArray(List<Condition> conditions) {
+        return new OrCondition(conditions);
+    }
+    
+    @JsonValue
+    public List<Condition> getConditions() {
+        return conditions;
     }
 }

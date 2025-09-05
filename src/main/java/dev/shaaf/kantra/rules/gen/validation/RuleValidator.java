@@ -3,6 +3,7 @@ package dev.shaaf.kantra.rules.gen.validation;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import dev.shaaf.kantra.rules.gen.model.Rule;
 import dev.shaaf.kantra.rules.gen.model.Ruleset;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -13,7 +14,16 @@ import java.util.List;
 @ApplicationScoped
 public class RuleValidator {
     
-    private final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
+    private final ObjectMapper yamlMapper;
+    
+    public RuleValidator() {
+        YAMLFactory yamlFactory = new YAMLFactory();
+        // Disable YAML type tags to force wrapper object format
+        yamlFactory.disable(YAMLGenerator.Feature.USE_NATIVE_TYPE_ID);
+        
+        this.yamlMapper = new ObjectMapper(yamlFactory);
+        this.yamlMapper.findAndRegisterModules();
+    }
     private final ObjectMapper jsonMapper = new ObjectMapper();
     
     /**
@@ -35,15 +45,15 @@ public class RuleValidator {
         
         // Step 2: Try to parse as Rule or Ruleset according to OpenAPI spec
         try {
-            // First try to parse as a single rule
-            if (yamlNode.isObject() && yamlNode.has("ruleID")) {
-                Rule rule = yamlMapper.treeToValue(yamlNode, Rule.class);
-                validateRule(rule, errors);
-            }
-            // Then try to parse as a ruleset
-            else if (yamlNode.isObject() && yamlNode.has("rules")) {
+            // First try to parse as a ruleset
+            if (yamlNode.isObject() && yamlNode.has("rules")) {
                 Ruleset ruleset = yamlMapper.treeToValue(yamlNode, Ruleset.class);
                 validateRuleset(ruleset, errors);
+            }
+            // Then try to parse as a single rule (any object that's not a ruleset)
+            else if (yamlNode.isObject()) {
+                Rule rule = yamlMapper.treeToValue(yamlNode, Rule.class);
+                validateRule(rule, errors);
             }
             // Try to parse as an array of rules
             else if (yamlNode.isArray()) {

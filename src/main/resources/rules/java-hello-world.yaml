@@ -1,0 +1,14 @@
+---
+- ruleID: "java-hello-world-message-001"
+  message: "Printing 'Hello World' to standard output is often used for debugging or simple examples and may not be suitable for production code. Consider using a logging framework. Before: `System.out.println("Hello World");`. After: `logger.info("Application started.");`"
+  description: "Detects 'Hello World' messages printed to standard output."
+  category: "potential"
+  effort: 1
+  labels:
+  - "java"
+  - "best-practice"
+  customVariable: []
+  when:
+    builtin.filecontent:
+      filePattern: ".*\\.java"
+      pattern: "System\\.out\\.println\\s*\\(\\s*"Hello World"\\s*\\);"

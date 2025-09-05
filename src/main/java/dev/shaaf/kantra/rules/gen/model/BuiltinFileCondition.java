@@ -5,19 +5,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record BuiltinFileCondition(
-    @JsonProperty("builtin.file") BuiltinFileDetails details,
+    String pattern,
     String as,
     String from,
     Boolean ignore,
     Boolean not
 ) implements Condition {
     
-    public BuiltinFileCondition(BuiltinFileDetails details) {
-        this(details, null, null, null, null);
+    public BuiltinFileCondition(String pattern) {
+        this(pattern, null, null, null, null);
     }
-    
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public record BuiltinFileDetails(
-        String pattern
-    ) {}
 }

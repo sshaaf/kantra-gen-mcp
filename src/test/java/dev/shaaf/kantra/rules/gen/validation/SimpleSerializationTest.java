@@ -10,15 +10,10 @@ public class SimpleSerializationTest {
         RuleValidator validator = new RuleValidator();
         
         // Create a simple Java referenced condition
-        JavaReferencedCondition.JavaReferencedDetails details = 
-            new JavaReferencedCondition.JavaReferencedDetails(
-                "org.apache.camel.ThreadPoolRejectedPolicy",
-                "IMPORT",
-                null,
-                null
-            );
-        
-        JavaReferencedCondition condition = new JavaReferencedCondition(details);
+        JavaReferencedCondition condition = new JavaReferencedCondition(
+            "org.apache.camel.ThreadPoolRejectedPolicy",
+            "IMPORT"
+        );
         
         Rule rule = new Rule(
             "test-rule",

@@ -8,21 +8,20 @@ import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record BuiltinXmlPublicIdCondition(
-    @JsonProperty("builtin.xmlPublicID") BuiltinXmlPublicIdDetails details,
+    List<String> filepaths,
+    Map<String, String> namespaces,
+    String regex,
     String as,
     String from,
     Boolean ignore,
     Boolean not
 ) implements Condition {
     
-    public BuiltinXmlPublicIdCondition(BuiltinXmlPublicIdDetails details) {
-        this(details, null, null, null, null);
+    public BuiltinXmlPublicIdCondition(String regex) {
+        this(null, null, regex, null, null, null, null);
     }
     
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public record BuiltinXmlPublicIdDetails(
-        List<String> filepaths,
-        Map<String, String> namespaces,
-        String regex
-    ) {}
+    public BuiltinXmlPublicIdCondition(List<String> filepaths, Map<String, String> namespaces, String regex) {
+        this(filepaths, namespaces, regex, null, null, null, null);
+    }
 }

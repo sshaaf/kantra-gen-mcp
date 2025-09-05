@@ -5,22 +5,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record JavaDependencyCondition(
-    @JsonProperty("java.dependency") JavaDependencyDetails details,
+    String name,
+    @JsonProperty("name_regex") String nameRegex,
+    String upperbound,
+    String lowerbound,
     String as,
     String from,
     Boolean ignore,
     Boolean not
 ) implements Condition {
     
-    public JavaDependencyCondition(JavaDependencyDetails details) {
-        this(details, null, null, null, null);
+    public JavaDependencyCondition(String name, String nameRegex, String upperbound, String lowerbound) {
+        this(name, nameRegex, upperbound, lowerbound, null, null, null, null);
     }
-    
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public record JavaDependencyDetails(
-        String name,
-        @JsonProperty("name_regex") String nameRegex,
-        String upperbound,
-        String lowerbound
-    ) {}
 }

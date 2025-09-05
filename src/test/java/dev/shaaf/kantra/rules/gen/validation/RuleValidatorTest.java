@@ -55,22 +55,17 @@ public class RuleValidatorTest {
         assertTrue(rule.when() instanceof JavaReferencedCondition);
         
         JavaReferencedCondition javaCondition = (JavaReferencedCondition) rule.when();
-        assertEquals("IMPORT", javaCondition.details().location());
-        assertEquals("org.apache.camel.ThreadPoolRejectedPolicy", javaCondition.details().pattern());
+        assertEquals("IMPORT", javaCondition.location());
+        assertEquals("org.apache.camel.ThreadPoolRejectedPolicy", javaCondition.pattern());
     }
 
     @Test
     void testJavaModelToYamlSerialization() throws Exception {
         // Create a rule using Java model
-        JavaReferencedCondition.JavaReferencedDetails javaDetails = 
-            new JavaReferencedCondition.JavaReferencedDetails(
-                "org.apache.camel.ThreadPoolRejectedPolicy",
-                "IMPORT",
-                null,
-                null
-            );
-        
-        JavaReferencedCondition whenCondition = new JavaReferencedCondition(javaDetails);
+        JavaReferencedCondition whenCondition = new JavaReferencedCondition(
+            "org.apache.camel.ThreadPoolRejectedPolicy",
+            "IMPORT"
+        );
         
         Rule rule = new Rule(
             "java-generic-information-00034",
@@ -122,7 +117,7 @@ public class RuleValidatorTest {
         assertTrue(rule.when() instanceof BuiltinFileCondition);
         
         BuiltinFileCondition fileCondition = (BuiltinFileCondition) rule.when();
-        assertEquals("*.xml", fileCondition.details().pattern());
+        assertEquals("*.xml", fileCondition.pattern());
     }
 
     @Test
@@ -283,8 +278,8 @@ public class RuleValidatorTest {
         assertTrue(rule.when() instanceof JavaDependencyCondition);
         
         JavaDependencyCondition depCondition = (JavaDependencyCondition) rule.when();
-        assertEquals("org.apache.camel:camel-core", depCondition.details().name());
-        assertEquals("3.0.0", depCondition.details().upperbound());
+        assertEquals("org.apache.camel:camel-core", depCondition.name());
+        assertEquals("3.0.0", depCondition.upperbound());
     }
 
     @Test
@@ -307,8 +302,8 @@ public class RuleValidatorTest {
         assertTrue(rule.when() instanceof BuiltinXmlCondition);
         
         BuiltinXmlCondition xmlCondition = (BuiltinXmlCondition) rule.when();
-        assertEquals("//dependency[artifactId='camel-core']", xmlCondition.details().xpath());
-        assertEquals(1, xmlCondition.details().filepaths().size());
-        assertEquals("pom.xml", xmlCondition.details().filepaths().get(0));
+        assertEquals("//dependency[artifactId='camel-core']", xmlCondition.xpath());
+        assertEquals(1, xmlCondition.filepaths().size());
+        assertEquals("pom.xml", xmlCondition.filepaths().get(0));
     }
 }

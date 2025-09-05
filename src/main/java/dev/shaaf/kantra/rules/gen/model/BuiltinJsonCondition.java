@@ -7,20 +7,19 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record BuiltinJsonCondition(
-    @JsonProperty("builtin.json") BuiltinJsonDetails details,
+    List<String> filepaths,
+    String xpath,
     String as,
     String from,
     Boolean ignore,
     Boolean not
 ) implements Condition {
     
-    public BuiltinJsonCondition(BuiltinJsonDetails details) {
-        this(details, null, null, null, null);
+    public BuiltinJsonCondition(String xpath) {
+        this(null, xpath, null, null, null, null);
     }
     
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public record BuiltinJsonDetails(
-        List<String> filepaths,
-        String xpath
-    ) {}
+    public BuiltinJsonCondition(List<String> filepaths, String xpath) {
+        this(filepaths, xpath, null, null, null, null);
+    }
 }

@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.WRAPPER_OBJECT
+        include = JsonTypeInfo.As.WRAPPER_OBJECT,
+        property = "@type"
 )
 @JsonSubTypes({
         @JsonSubTypes.Type(value = AndCondition.class, name = "and"),
