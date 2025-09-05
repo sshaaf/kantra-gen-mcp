@@ -9,12 +9,8 @@ import jakarta.inject.Inject;
 
 import java.util.List;
 
-/**
- * Simplified, consolidated tools for Kantra rule generation.
- * This replaces the complex multi-tool approach with clear, single-purpose tools.
- */
 @ApplicationScoped
-public class KantraSimplifiedTools {
+public class KantraRuleTools {
 
     @Inject
     RuleValidator ruleValidator;
