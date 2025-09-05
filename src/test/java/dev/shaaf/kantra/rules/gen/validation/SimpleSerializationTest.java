@@ -1,6 +1,8 @@
 package dev.shaaf.kantra.rules.gen.validation;
 
-import dev.shaaf.kantra.rules.gen.model.*;
+import dev.shaaf.kantra.rules.gen.model.Category;
+import dev.shaaf.kantra.rules.gen.model.JavaReferencedCondition;
+import dev.shaaf.kantra.rules.gen.model.Rule;
 import org.junit.jupiter.api.Test;
 
 public class SimpleSerializationTest {
