@@ -46,7 +46,7 @@ public class KantraSimplifiedTools {
             @ToolArg(description = "Rule ID (e.g., 'deprecated-thread-pool-policy')") String ruleID,
             @ToolArg(description = "What Java class/method to detect (e.g., 'org.apache.camel.ThreadPoolRejectedPolicy')") String javaPattern,
             @ToolArg(description = "Where to look: IMPORT, CLASS, METHOD_CALL, CONSTRUCTOR_CALL, ANNOTATION, FIELD, METHOD") JavaLocation location,
-            @ToolArg(description = "Migration message with before/after examples") String message,
+            @ToolArg(description = "Give a step-by-step instruction on changing the code. a before example and an after example") String message,
             @ToolArg(description = "Rule urgency: MANDATORY, OPTIONAL, POTENTIAL") Category category,
             @ToolArg(description = "Effort level 1-5") Integer effort) {
 
@@ -67,7 +67,7 @@ public class KantraSimplifiedTools {
             @ToolArg(description = "Rule ID (e.g., 'detect-system-out-println')") String ruleID,
             @ToolArg(description = "File pattern to search (e.g., '*.java' for Java files, '*.xml' for XML files)") String filePattern,
             @ToolArg(description = "Text/regex pattern to find (e.g., 'System\\.out\\.println' or 'Hello.*World')") String contentPattern,
-            @ToolArg(description = "Migration message with before/after examples") String message,
+            @ToolArg(description = "Give a step-by-step instruction on changing the code. a before example and an after example") String message,
             @ToolArg(description = "Rule urgency: MANDATORY, OPTIONAL, POTENTIAL") Category category,
             @ToolArg(description = "Effort level 1-5") Integer effort) {
 
@@ -87,7 +87,7 @@ public class KantraSimplifiedTools {
     public String createXmlRule(
             @ToolArg(description = "Rule ID (e.g., 'deprecated-xml-config')") String ruleID,
             @ToolArg(description = "XPath expression to find XML elements (e.g., '//bean[@class=\"com.example.OldClass\"]')") String xpath,
-            @ToolArg(description = "Migration message with before/after examples") String message,
+            @ToolArg(description = "Give a step-by-step instruction on changing the code. a before example and an after example") String message,
             @ToolArg(description = "Rule urgency: MANDATORY, OPTIONAL, POTENTIAL") Category category,
             @ToolArg(description = "Effort level 1-5") Integer effort) {
 
@@ -122,12 +122,12 @@ public class KantraSimplifiedTools {
         try {
             RuleValidator.ValidationResult result = ruleValidator.validateYamlRule(yamlContent);
             if (result.isValid()) {
-                return "✅ Rule is valid!";
+                return "Rule is valid!";
             } else {
-                return "❌ Rule validation failed: " + result.errors();
+                return "Rule validation failed: " + result.errors();
             }
         } catch (Exception e) {
-            return "❌ Validation error: " + e.getMessage();
+            return "Validation error: " + e.getMessage();
         }
     }
 
