@@ -1,0 +1,366 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Konveyor API",
+    "version": "1.0.0",
+    "description": "Complete OpenAPI specification for Konveyor analyzer-lsp including built-in and Java provider capabilities"
+  },
+  "paths": {},
+  "components": {
+    "schemas": {
+      "and": {
+        "type": "object",
+        "properties": {
+          "and": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "oneOf": [
+                { "$ref": "#/components/schemas/builtin.json" },
+                { "$ref": "#/components/schemas/builtin.xml" },
+                { "$ref": "#/components/schemas/builtin.filecontent" },
+                { "$ref": "#/components/schemas/builtin.file" },
+                { "$ref": "#/components/schemas/builtin.xmlPublicID" },
+                { "$ref": "#/components/schemas/builtin.hasTags" },
+                { "$ref": "#/components/schemas/java.referenced" },
+                { "$ref": "#/components/schemas/java.dependency" },
+                { "$ref": "#/components/schemas/and" },
+                { "$ref": "#/components/schemas/or" }
+              ]
+            }
+          }
+        }
+      },
+      "or": {
+        "type": "object",
+        "properties": {
+          "or": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "oneOf": [
+                { "$ref": "#/components/schemas/builtin.json" },
+                { "$ref": "#/components/schemas/builtin.xml" },
+                { "$ref": "#/components/schemas/builtin.filecontent" },
+                { "$ref": "#/components/schemas/builtin.file" },
+                { "$ref": "#/components/schemas/builtin.xmlPublicID" },
+                { "$ref": "#/components/schemas/builtin.hasTags" },
+                { "$ref": "#/components/schemas/java.referenced" },
+                { "$ref": "#/components/schemas/java.dependency" },
+                { "$ref": "#/components/schemas/and" },
+                { "$ref": "#/components/schemas/or" }
+              ]
+            }
+          }
+        }
+      },
+      "builtin.file": {
+        "type": "object",
+        "properties": {
+          "as": { "type": "string" },
+          "builtin.file": {
+            "type": "object",
+            "properties": {
+              "pattern": {
+                "title": "Pattern",
+                "type": "string",
+                "description": "Find files with names matching this pattern"
+              }
+            }
+          },
+          "from": { "type": "string" },
+          "ignore": { "type": "boolean" },
+          "not": { "type": "boolean" }
+        }
+      },
+      "builtin.file-out": {
+        "type": "object",
+        "properties": {
+          "filepaths": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "builtin.filecontent": {
+        "type": "object",
+        "properties": {
+          "as": { "type": "string" },
+          "builtin.filecontent": {
+            "type": "object",
+            "properties": {
+              "filePattern": {
+                "title": "FilePattern",
+                "type": "string",
+                "description": "Only search in files with names matching this pattern"
+              },
+              "pattern": {
+                "title": "Pattern",
+                "type": "string",
+                "description": "Regex pattern to match in content"
+              }
+            }
+          },
+          "from": { "type": "string" },
+          "ignore": { "type": "boolean" },
+          "not": { "type": "boolean" }
+        }
+      },
+      "builtin.hasTags": {
+        "type": "object",
+        "properties": {
+          "as": { "type": "string" },
+          "builtin.hasTags": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "from": { "type": "string" },
+          "ignore": { "type": "boolean" },
+          "not": { "type": "boolean" }
+        }
+      },
+      "builtin.json": {
+        "type": "object",
+        "properties": {
+          "as": { "type": "string" },
+          "builtin.json": {
+            "type": "object",
+            "properties": {
+              "filepaths": {
+                "title": "Filepaths",
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Optional list of files to scope down search"
+              },
+              "xpath": {
+                "title": "XPath",
+                "type": "string",
+                "description": "Xpath query"
+              }
+            }
+          },
+          "from": { "type": "string" },
+          "ignore": { "type": "boolean" },
+          "not": { "type": "boolean" }
+        }
+      },
+      "builtin.xml": {
+        "type": "object",
+        "properties": {
+          "as": { "type": "string" },
+          "builtin.xml": {
+            "type": "object",
+            "properties": {
+              "filepaths": {
+                "title": "Filepaths",
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Optional list of files to scope down search"
+              },
+              "namespace": {
+                "title": "Namespaces",
+                "type": "object",
+                "additionalProperties": { "type": "string" },
+                "description": "A map to scope down query to namespaces"
+              },
+              "xpath": {
+                "title": "XPath",
+                "type": "string",
+                "description": "Xpath query"
+              }
+            }
+          },
+          "from": { "type": "string" },
+          "ignore": { "type": "boolean" },
+          "not": { "type": "boolean" }
+        }
+      },
+      "builtin.xmlPublicID": {
+        "type": "object",
+        "properties": {
+          "as": { "type": "string" },
+          "builtin.xmlPublicID": {
+            "type": "object",
+            "properties": {
+              "filepaths": {
+                "title": "Filepaths",
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Optional list of files to scope down search",
+                "nullable": true
+              },
+              "namespaces": {
+                "title": "Namespaces",
+                "type": "object",
+                "additionalProperties": { "type": "string" },
+                "description": "A map to scope down query to namespaces",
+                "nullable": true
+              },
+              "regex": { "type": "string" }
+            }
+          },
+          "from": { "type": "string" },
+          "ignore": { "type": "boolean" },
+          "not": { "type": "boolean" }
+        }
+      },
+      "java.referenced": {
+        "type": "object",
+        "properties": {
+          "as": { "type": "string" },
+          "java.referenced": {
+            "type": "object",
+            "properties": {
+              "pattern": {
+                "title": "Pattern",
+                "type": "string",
+                "description": "Java regex pattern to match against Java elements"
+              },
+              "location": {
+                "title": "Location",
+                "type": "string",
+                "description": "Location type for the reference (inheritance, method_call, constructor_call, annotation, implements_type, enum, return_type, import, variable_declaration, type, package, field, method, class)"
+              },
+              "annotated": {
+                "title": "Annotated",
+                "type": "object",
+                "properties": {
+                  "pattern": {
+                    "title": "Pattern",
+                    "type": "string",
+                    "description": "Pattern to match annotations"
+                  },
+                  "elements": {
+                    "title": "Elements",
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "title": "Name",
+                          "type": "string",
+                          "description": "Element name"
+                        },
+                        "value": {
+                          "title": "Value",
+                          "type": "string",
+                          "description": "Element value (can be a Java regex pattern)"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "filepaths": {
+                "title": "Filepaths",
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Optional list of files to scope down search"
+              }
+            }
+          },
+          "from": { "type": "string" },
+          "ignore": { "type": "boolean" },
+          "not": { "type": "boolean" }
+        }
+      },
+      "java.dependency": {
+        "type": "object",
+        "properties": {
+          "as": { "type": "string" },
+          "java.dependency": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "title": "Name",
+                "type": "string",
+                "description": "Name of the dependency"
+              },
+              "name_regex": {
+                "title": "NameRegex",
+                "type": "string",
+                "description": "Regex pattern to match the name (e.g., kubernetes* or jakarta-.*-2.2)"
+              },
+              "upperbound": {
+                "title": "Upperbound",
+                "type": "string",
+                "description": "Match versions lower than or equal to"
+              },
+              "lowerbound": {
+                "title": "Lowerbound",
+                "type": "string",
+                "description": "Match versions greater than or equal to"
+              }
+            }
+          },
+          "from": { "type": "string" },
+          "ignore": { "type": "boolean" },
+          "not": { "type": "boolean" }
+        }
+      },
+      "rule": {
+        "type": "object",
+        "properties": {
+          "ruleID": { "type": "string" },
+          "message": { "type": "string" },
+          "description": { "type": "string" },
+          "category": {
+            "type": "string",
+            "oneOf": ["potential", "optional", "mandatory"]
+          },
+          "effort": { "type": "integer" },
+          "labels": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "tag": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "customVariable": {
+            "type": "array",
+            "properties": {
+              "name": { "type": "string" },
+              "defaultValue": { "type": "string" },
+              "nameOfCaptureGroup": { "type": "string" }
+            }
+          },
+          "when": {
+            "type": "object",
+            "oneOf": [
+              { "$ref": "#/components/schemas/builtin.json" },
+              { "$ref": "#/components/schemas/builtin.xml" },
+              { "$ref": "#/components/schemas/builtin.filecontent" },
+              { "$ref": "#/components/schemas/builtin.file" },
+              { "$ref": "#/components/schemas/builtin.xmlPublicID" },
+              { "$ref": "#/components/schemas/builtin.hasTags" },
+              { "$ref": "#/components/schemas/java.referenced" },
+              { "$ref": "#/components/schemas/java.dependency" },
+              { "$ref": "#/components/schemas/and" },
+              { "$ref": "#/components/schemas/or" }
+            ]
+          }
+        }
+      },
+      "rulesets": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "labels": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "rules": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/rule" }
+          }
+        }
+      }
+    }
+  }
+}
