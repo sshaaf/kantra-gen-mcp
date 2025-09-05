@@ -5,4 +5,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record Annotated(String pattern, List<Element> elements) {}
+public record Ruleset(
+        String name,
+        String description,
+        List<String> labels,
+        List<String> tags,
+        List<Rule> rules
+) {}

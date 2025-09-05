@@ -55,23 +55,16 @@ This MCP server revolutionizes how you generate Kantra rules by bringing the pow
 
 ### 🛠️ **Available Tools**
 
-The MCP server provides several powerful tools for rule generation:
+This MCP server helps create and manage rules for Kantra, a tool for modernizing Java applications.
 
-#### **Builtin Rule Tools**
-- **File Conditions**: Check file existence, content, and patterns
-- **XML/JSON Analysis**: Parse and validate XML/JSON structures
-- **Tag-based Rules**: Create rules based on file tags and metadata
-- **Content Matching**: Advanced text and pattern matching
-
-#### **Custom Rule Tools**
-- **Java-specific Rules**: Migration rules for Java versions, dependencies, APIs
-- **Framework Rules**: Spring Boot, Jakarta EE, and other framework migrations
-- **Custom Variables**: Define reusable variables for complex rule patterns
-
-#### **Core Rule Engine**
-- **Conditional Logic**: AND, OR, NOT operations for complex rule conditions
-- **Category Management**: Organize rules by migration categories
-- **Link Management**: Create relationships between rules and resources
+*   `combineWithAnd`: Combine multiple conditions with AND logic.
+*   `combineWithOr`: Combine multiple conditions with OR logic.
+*   `createFileContentRule`: Create a rule to detect specific content within files.
+*   `createJavaClassRule`: Create a rule to detect the usage of specific Java classes or methods.
+*   `createJavaImportRule`: Create a rule to detect specific Java import statements.
+*   `createXmlRule`: Create a rule to detect XML content using XPath expressions.
+*   `getHelp`: Get help and examples for creating Kantra rules.
+*   `validateRule`: Validate a YAML rule file for syntax and schema compliance.
 
 ## 🎯 **Real-World Benefits**
 
@@ -152,6 +145,13 @@ If using the uber jar change the `cmd` and `args` as follows
 ```yaml
     cmd|command: "java"
     args: ["-jar", "path to jar"]
+```
+
+To build and use it with goose
+
+```
+mvn clean compile package -Dquarkus.package.jar.type=uber-jar
+goose session --with-extension="java -jar target/kantra-gen-mcp-1.0.0-SNAPSHOT-runner.jar"
 ```
 
 ## Build and Release
