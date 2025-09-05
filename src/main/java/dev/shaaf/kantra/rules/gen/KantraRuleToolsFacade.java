@@ -149,7 +149,109 @@ public class KantraRuleToolsFacade {
         return coreTools.combineWithAnd(List.of(fileCondition, javaCondition));
     }
     
-    @Tool(description = "[FACADE] Gets usage examples and cross-references for rule building workflows.")
+    @Tool(description = "[FACADE] Analyzes a user request and provides intelligent tool routing suggestions.")
+    public String getToolSuggestions(@ToolArg(description = "User's request or description of what they want to accomplish") String userRequest) {
+        String request = userRequest.toLowerCase();
+        
+        StringBuilder suggestions = new StringBuilder();
+        suggestions.append("# 🎯 Tool Routing Suggestions for: \"").append(userRequest).append("\"\n\n");
+        
+        // Analyze request and provide specific suggestions
+        if (request.contains("java") && (request.contains("moved") || request.contains("migrate"))) {
+            suggestions.append("""
+                ## ✅ Recommended: Quick Java Migration
+                ```
+                buildJavaMigrationRule(
+                    ruleID: "your-rule-id",
+                    description: "Java element migration",
+                    migrationSummary: "Describe what changed",
+                    javaPattern: "com.old.package.*",
+                    location: "IMPORT",  // or CLASS, METHOD_CALL, etc.
+                    sourceVersion: "oldVersion",
+                    targetVersion: "newVersion+", 
+                    category: MANDATORY,
+                    effort: 2
+                )
+                ```
+                **Why:** Single call handles Java migrations with proper labels
+                
+                """);
+        }
+        
+        if (request.contains("file") || request.contains("*.") || request.contains("xml") || request.contains("json")) {
+            suggestions.append("""
+                ## ✅ Recommended: File-Based Rule
+                ```
+                buildFileMigrationRule(
+                    ruleID: "file-rule-001", 
+                    description: "File pattern rule",
+                    migrationSummary: "Update matching files",
+                    filePattern: "*.xml",  // or your pattern
+                    category: OPTIONAL,
+                    effort: 1,
+                    labels: ["config", "files"]
+                )
+                ```
+                **Why:** Optimized for file pattern matching
+                
+                """);
+        }
+        
+        if (request.contains("validate") || request.contains("check")) {
+            suggestions.append("""
+                ## ✅ Recommended: Validation Tools
+                ```
+                // Validate YAML
+                result = validateRule(yamlContent)
+                if (result.isValid()) {
+                    // Parse for inspection
+                    rule = parseYamlRule(yamlContent) 
+                }
+                ```
+                **Why:** Direct validation and parsing support
+                
+                """);
+        }
+        
+        if (request.contains("and") || request.contains("or") || request.contains("complex")) {
+            suggestions.append("""
+                ## ⚙️ Advanced: Complex Conditions
+                ```
+                // Step 1: Build individual conditions
+                javaCondition = getJavaTools().buildJavaReferenced("IMPORT", "com.example.*")
+                fileCondition = getBuiltinTools().buildFileCondition("*.java")
+                
+                // Step 2: Combine
+                combined = getCoreTools().combineWithAnd([fileCondition, javaCondition])
+                
+                // Step 3: Build rule
+                rule = getCoreTools().buildRule(...)
+                yaml = getCoreTools().serializeRuleToYaml(rule)
+                ```
+                **Why:** Maximum flexibility for complex scenarios
+                
+                """);
+        }
+        
+        // Always add general guidance
+        suggestions.append("""
+            ## 🧭 General Guidance
+            - **Start Simple:** Try facade tools first ([FACADE] category)
+            - **Progressive Complexity:** Move to direct tools only if needed
+            - **Always Validate:** Use `validateRule()` on final YAML
+            - **Get Help:** Use `getUsageExamples()` for comprehensive guide
+            
+            ## 🔄 Next Steps
+            1. Choose the recommended approach above
+            2. Customize parameters for your specific case
+            3. Validate the generated YAML
+            4. Test with your target application
+            """);
+        
+        return suggestions.toString();
+    }
+
+    @Tool(description = "[FACADE] Gets comprehensive usage examples and cross-references for rule building workflows.")
     public String getUsageExamples() {
         return """
         # Kantra Rule Tools Usage Examples
