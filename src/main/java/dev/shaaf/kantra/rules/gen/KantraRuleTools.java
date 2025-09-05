@@ -17,26 +17,6 @@ public class KantraRuleTools {
 
     // ========== PRIMARY RULE BUILDERS ==========
 
-    @Tool(description = "Create a Kantra rule to detect Java import statements (e.g., javax.* to jakarta.* migrations)")
-    public String createJavaImportRule(
-            @ToolArg(description = "Rule ID (e.g., 'javax-to-jakarta-persistence')") String ruleID,
-            @ToolArg(description = "What Java package/class to detect (e.g., 'javax.persistence.*')") String javaPattern,
-            @ToolArg(description = "Migration message with before/after examples (e.g., 'Change javax.persistence to jakarta.persistence. Before: import javax.persistence.Entity; After: import jakarta.persistence.Entity;')") String message,
-            @ToolArg(description = "Rule urgency: MANDATORY (must fix), OPTIONAL (should fix), POTENTIAL (might fix)") Category category,
-            @ToolArg(description = "Effort level 1-5 (1=trivial, 5=major refactoring)") Integer effort) {
-
-        JavaReferencedCondition condition = new JavaReferencedCondition(javaPattern, JavaLocation.IMPORT.toString());
-        Rule rule = new Rule(
-            ruleID, message, "Detects Java import: " + javaPattern, category, effort,
-            List.of("java", "import", "migration"), List.of(), List.of(), condition
-        );
-        try {
-            return ruleValidator.ruleToYaml(rule);
-        } catch (Exception e) {
-            return "Error: Could not serialize rule to YAML. " + e.getMessage();
-        }
-    }
-
     @Tool(description = "Create a Kantra rule to detect Java class usage (e.g., deprecated classes, method calls)")
     public String createJavaClassRule(
             @ToolArg(description = "Rule ID (e.g., 'deprecated-thread-pool-policy')") String ruleID,
@@ -61,7 +41,7 @@ public class KantraRuleTools {
     @Tool(description = "Create a Kantra rule to detect content inside files (e.g., System.out.println, specific text patterns)")
     public String createFileContentRule(
             @ToolArg(description = "Rule ID (e.g., 'detect-system-out-println')") String ruleID,
-            @ToolArg(description = "File pattern to search (e.g., '*.java' for Java files, '*.xml' for XML files)") String filePattern,
+            @ToolArg(description = "File pattern to search (e.g., '*.java' for Java files, '*.xml' for XML files, *.properties for properties files)") String filePattern,
             @ToolArg(description = "Text/regex pattern to find (e.g., 'System\\.out\\.println' or 'Hello.*World')") String contentPattern,
             @ToolArg(description = "Give a step-by-step instruction on changing the code. a before example and an after example") String message,
             @ToolArg(description = "Rule urgency: MANDATORY, OPTIONAL, POTENTIAL") Category category,

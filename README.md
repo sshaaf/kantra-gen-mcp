@@ -8,6 +8,53 @@
 
 A Model Context Protocol (MCP) server for Kantra rule generation.
 
+example: 
+```bash
+( O)> create a kantra rule to convert package javax.persistence to jakarta.persistence
+
+─── createJavaClassRule | ajvo4tjl ──────────────────────────
+category: MANDATORY
+effort: 1
+javaPattern: javax.persistence
+location: IMPORT
+message: ...
+ruleID: javax-to-jakarta-persistence
+
+◇  Goose would like to call the above tool, do you allow?
+│  Allow 
+│
+I have created a Kantra rule to replace `javax.persistence` imports with `jakarta.persistence`. Here is the generated YAML for the rule:
+
+
+- ruleID: "javax-to-jakarta-persistence"
+  message: "The javax.persistence package has been replaced by jakarta.persistence.
+    Please update your import statements to use the new package.
+
+    **Before:**
+    ```java
+    import javax.persistence.Entity;
+    ```
+
+    **After:**
+    ```java
+    import jakarta.persistence.Entity;
+    ```
+    "
+  description: "Detects Java import: javax.persistence"
+  category: "mandatory"
+  effort: 1
+  labels:
+  - "java"
+  - "import"
+  tag: []
+  customVariable: []
+  when:
+    java.referenced:
+      pattern: "javax.persistence"
+      location: "IMPORT"
+```
+
+
 ## 🚀 Why This Project!
 
 This MCP server revolutionizes how you generate Kantra rules by bringing the power of AI directly into your development workflow. Here's why it's a game-changer:
