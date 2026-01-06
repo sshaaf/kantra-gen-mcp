@@ -1,0 +1,358 @@
+package dev.shaaf.kantra.rules.gen;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import dev.shaaf.kantra.rules.gen.model.Rule;
+import dev.shaaf.kantra.rules.gen.validation.RuleValidator;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
+import java.util.stream.Stream;
+
+/**
+ * Generates training data from Konveyor rules repository.
+ * Clones the repository locally and converts YAML rules to JSONL format for LLM training.
+ */
+public class TrainingDataGenerator {
+    
+    private static final String REPO_URL = "https://github.com/konveyor/rulesets.git";
+    private static final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
+    private static final ObjectMapper jsonMapper = new ObjectMapper();
+    private static final RuleValidator validator = new RuleValidator();
+    
+    public static void main(String[] args) throws Exception {
+        String outputFile = args.length > 0 ? args[0] : "train_dataset.jsonl";
+        
+        System.out.println("🚀 Starting training data generation...");
+        System.out.println("📂 Output file: " + outputFile);
+        
+        TrainingDataGenerator generator = new TrainingDataGenerator();
+        generator.generateTrainingData(outputFile);
+        
+        System.out.println("✅ Training data generation completed!");
+    }
+    
+    public void generateTrainingData(String outputFile) throws Exception {
+        Path tempDir = Files.createTempDirectory("konveyor-rulesets");
+        System.out.println("📁 Created temporary directory: " + tempDir);
+        
+        try {
+            // Clone the repository
+            System.out.println("📥 Cloning repository: " + REPO_URL);
+            Git git = Git.cloneRepository()
+                    .setURI(REPO_URL)
+                    .setDirectory(tempDir.toFile())
+                    .call();
+            
+            System.out.println("✅ Repository cloned successfully");
+            
+            // Process YAML files
+            List<TrainingExample> examples = new ArrayList<>();
+            int processed = 0;
+            int skipped = 0;
+            
+            // Find all YAML files, excluding rulesets
+            try (Stream<Path> paths = Files.walk(tempDir)) {
+                List<Path> yamlFiles = paths
+                        .filter(Files::isRegularFile)
+                        .filter(path -> isYamlFile(path.getFileName().toString()))
+                        .filter(path -> !isRulesetFile(path.getFileName().toString()))
+                        .sorted()
+                        .toList();
+                
+                System.out.println("📋 Found " + yamlFiles.size() + " YAML rule files");
+                
+                for (Path yamlFile : yamlFiles) {
+                    try {
+                        System.out.println("🔄 Processing: " + tempDir.relativize(yamlFile));
+                        
+                        String yamlContent = Files.readString(yamlFile);
+                        if (yamlContent.trim().isEmpty()) {
+                            System.out.println("⚠️  Skipping empty file");
+                            skipped++;
+                            continue;
+                        }
+                        
+                        List<TrainingExample> fileExamples = processYamlFile(yamlContent, yamlFile.toString());
+                        examples.addAll(fileExamples);
+                        processed++;
+                        
+                        System.out.println("✅ Generated " + fileExamples.size() + " examples");
+                        
+                    } catch (Exception e) {
+                        System.err.println("❌ Error processing " + yamlFile + ": " + e.getMessage());
+                        skipped++;
+                    }
+                }
+            }
+            
+            // Write training data to JSONL file
+            writeTrainingData(examples, outputFile);
+            
+            System.out.println("📊 Summary:");
+            System.out.println("  - Files processed: " + processed);
+            System.out.println("  - Files skipped: " + skipped);
+            System.out.println("  - Training examples generated: " + examples.size());
+            System.out.println("  - Output file: " + outputFile);
+            
+            git.close();
+            
+        } finally {
+            // Clean up temporary directory
+            deleteDirectory(tempDir);
+            System.out.println("🧹 Cleaned up temporary directory");
+        }
+    }
+    
+    private boolean isYamlFile(String filename) {
+        return filename.endsWith(".yaml") || filename.endsWith(".yml");
+    }
+    
+    private boolean isRulesetFile(String filename) {
+        return filename.toLowerCase().contains("ruleset");
+    }
+    
+    private List<TrainingExample> processYamlFile(String yamlContent, String filename) throws Exception {
+        List<TrainingExample> examples = new ArrayList<>();
+        
+        try {
+            // Try to parse as a single rule first
+            JsonNode rootNode = yamlMapper.readTree(yamlContent);
+            
+            if (rootNode.isArray()) {
+                // Multiple rules in array
+                for (JsonNode ruleNode : rootNode) {
+                    if (isValidRule(ruleNode)) {
+                        TrainingExample example = createTrainingExample(ruleNode, filename);
+                        if (example != null) {
+                            examples.add(example);
+                        }
+                    }
+                }
+            } else if (rootNode.isObject()) {
+                // Single rule or ruleset
+                if (isValidRule(rootNode)) {
+                    TrainingExample example = createTrainingExample(rootNode, filename);
+                    if (example != null) {
+                        examples.add(example);
+                    }
+                } else if (rootNode.has("rules")) {
+                    // It's a ruleset, extract individual rules
+                    JsonNode rulesNode = rootNode.get("rules");
+                    if (rulesNode.isArray()) {
+                        for (JsonNode ruleNode : rulesNode) {
+                            if (isValidRule(ruleNode)) {
+                                TrainingExample example = createTrainingExample(ruleNode, filename);
+                                if (example != null) {
+                                    examples.add(example);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error parsing YAML from " + filename + ": " + e.getMessage());
+        }
+        
+        return examples;
+    }
+    
+    private boolean isValidRule(JsonNode ruleNode) {
+        return ruleNode.isObject() && 
+               (ruleNode.has("ruleID") || ruleNode.has("id")) &&
+               ruleNode.has("when");
+    }
+    
+    private TrainingExample createTrainingExample(JsonNode ruleNode, String filename) {
+        try {
+            // Extract key information from the rule
+            String ruleId = getRuleId(ruleNode);
+            String description = getDescription(ruleNode);
+            JsonNode whenNode = ruleNode.get("when");
+            JsonNode performNode = ruleNode.get("perform");
+            String category = getCategory(ruleNode);
+            
+            if (ruleId == null || whenNode == null) {
+                return null;
+            }
+            
+            // Generate user prompt based on rule characteristics
+            String userPrompt = generateUserPrompt(ruleNode, whenNode, description);
+            
+            // Generate assistant response (the actual rule in YAML)
+            String assistantResponse = generateAssistantResponse(ruleNode);
+            
+            return new TrainingExample(userPrompt, assistantResponse);
+            
+        } catch (Exception e) {
+            System.err.println("Error creating training example from " + filename + ": " + e.getMessage());
+            return null;
+        }
+    }
+    
+    private String getRuleId(JsonNode ruleNode) {
+        if (ruleNode.has("ruleID")) {
+            return ruleNode.get("ruleID").asText();
+        } else if (ruleNode.has("id")) {
+            return ruleNode.get("id").asText();
+        }
+        return null;
+    }
+    
+    private String getDescription(JsonNode ruleNode) {
+        if (ruleNode.has("description")) {
+            return ruleNode.get("description").asText();
+        }
+        return "";
+    }
+    
+    private String getCategory(JsonNode ruleNode) {
+        if (ruleNode.has("category")) {
+            return ruleNode.get("category").asText();
+        }
+        return "optional";
+    }
+    
+    private String generateUserPrompt(JsonNode ruleNode, JsonNode whenNode, String description) {
+        StringBuilder prompt = new StringBuilder();
+        
+        // Analyze the 'when' condition to understand what the rule is detecting
+        if (whenNode.has("java.dependency")) {
+            JsonNode depNode = whenNode.get("java.dependency");
+            String depName = depNode.has("name") ? depNode.get("name").asText() : "dependency";
+            prompt.append("Create a rule that flags the use of the `").append(depName).append("` dependency");
+            if (!description.isEmpty()) {
+                prompt.append(" because ").append(description.toLowerCase());
+            }
+        } else if (whenNode.has("java.import")) {
+            JsonNode importNode = whenNode.get("java.import");
+            String pattern = importNode.has("pattern") ? importNode.get("pattern").asText() : "import";
+            prompt.append("I need a rule to find the `").append(pattern).append("` import");
+            if (!description.isEmpty()) {
+                prompt.append(". ").append(description);
+            }
+        } else if (whenNode.has("java.referenced")) {
+            JsonNode refNode = whenNode.get("java.referenced");
+            String pattern = refNode.has("pattern") ? refNode.get("pattern").asText() : "class";
+            String location = refNode.has("location") ? refNode.get("location").asText() : "";
+            
+            if ("IMPORT".equals(location)) {
+                prompt.append("Write a rule to detect imports of `").append(pattern).append("`");
+            } else if ("METHOD_CALL".equals(location)) {
+                prompt.append("Create a rule to find calls to `").append(pattern).append("`");
+            } else if ("ANNOTATION".equals(location)) {
+                prompt.append("I need to detect usage of the `").append(pattern).append("` annotation");
+            } else if ("INHERITANCE".equals(location)) {
+                prompt.append("Create a rule to find classes that extend `").append(pattern).append("`");
+            } else if ("IMPLEMENTS_TYPE".equals(location)) {
+                prompt.append("Write a rule to find classes that implement `").append(pattern).append("`");
+            } else {
+                prompt.append("Create a rule to detect usage of `").append(pattern).append("`");
+            }
+            
+            if (!description.isEmpty()) {
+                prompt.append(". ").append(description);
+            }
+        } else if (whenNode.has("builtin.file")) {
+            JsonNode fileNode = whenNode.get("builtin.file");
+            String pattern = fileNode.has("pattern") ? fileNode.get("pattern").asText() : "files";
+            prompt.append("Write a rule to identify `").append(pattern).append("` files");
+            if (!description.isEmpty()) {
+                prompt.append(" - ").append(description.toLowerCase());
+            }
+        } else if (whenNode.has("builtin.filecontent")) {
+            JsonNode contentNode = whenNode.get("builtin.filecontent");
+            String pattern = contentNode.has("pattern") ? contentNode.get("pattern").asText() : "content";
+            String filePattern = contentNode.has("filePattern") ? contentNode.get("filePattern").asText() : "files";
+            prompt.append("Create a rule to find content matching `").append(pattern).append("` in ").append(filePattern);
+            if (!description.isEmpty()) {
+                prompt.append(". ").append(description);
+            }
+        } else if (whenNode.has("builtin.xml")) {
+            JsonNode xmlNode = whenNode.get("builtin.xml");
+            String xpath = xmlNode.has("xpath") ? xmlNode.get("xpath").asText() : "XML element";
+            prompt.append("I need a rule to detect XML content using XPath `").append(xpath).append("`");
+            if (!description.isEmpty()) {
+                prompt.append(". ").append(description);
+            }
+        } else {
+            // Generic fallback
+            prompt.append("Create a rule to detect ");
+            if (!description.isEmpty()) {
+                prompt.append(description.toLowerCase());
+            } else {
+                prompt.append("a specific pattern in the code");
+            }
+        }
+        
+        // Add context about migration or security if relevant
+        String desc = description.toLowerCase();
+        if (desc.contains("security") || desc.contains("vulnerability")) {
+            prompt.append(". This is a security concern");
+        } else if (desc.contains("deprecated") || desc.contains("replace") || desc.contains("migrate")) {
+            prompt.append(" for migration purposes");
+        }
+        
+        prompt.append(".");
+        
+        return prompt.toString();
+    }
+    
+    private String generateAssistantResponse(JsonNode ruleNode) throws Exception {
+        // Convert the rule back to clean YAML format
+        return yamlMapper.writeValueAsString(ruleNode).trim();
+    }
+    
+    private void writeTrainingData(List<TrainingExample> examples, String outputFile) throws Exception {
+        try (FileWriter writer = new FileWriter(outputFile)) {
+            for (TrainingExample example : examples) {
+                // Create the JSONL format
+                Map<String, Object> jsonlEntry = new HashMap<>();
+                List<Map<String, String>> messages = new ArrayList<>();
+                
+                // User message
+                Map<String, String> userMessage = new HashMap<>();
+                userMessage.put("role", "user");
+                userMessage.put("content", example.userPrompt);
+                messages.add(userMessage);
+                
+                // Assistant message
+                Map<String, String> assistantMessage = new HashMap<>();
+                assistantMessage.put("role", "assistant");
+                assistantMessage.put("content", example.assistantResponse);
+                messages.add(assistantMessage);
+                
+                jsonlEntry.put("messages", messages);
+                
+                // Write as single line JSON
+                writer.write(jsonMapper.writeValueAsString(jsonlEntry));
+                writer.write("\n");
+            }
+        }
+    }
+    
+    private void deleteDirectory(Path directory) throws IOException {
+        if (Files.exists(directory)) {
+            try (Stream<Path> paths = Files.walk(directory)) {
+                paths.sorted(Comparator.reverseOrder())
+                     .map(Path::toFile)
+                     .forEach(File::delete);
+            }
+        }
+    }
+    
+    private static class TrainingExample {
+        final String userPrompt;
+        final String assistantResponse;
+        
+        TrainingExample(String userPrompt, String assistantResponse) {
+            this.userPrompt = userPrompt;
+            this.assistantResponse = assistantResponse;
+        }
+    }
+}
