@@ -44,7 +44,9 @@ public class CreateXmlRuleCommand extends AbstractCommand {
                 "xpath": "//bean[@class='com.example.OldClass']",
                 "message": "Update deprecated XML configuration. Before: <bean class='com.example.OldClass'/>; After: <bean class='com.example.NewClass'/>",
                 "category": "MANDATORY",
-                "effort": 2
+                "effort": 2,
+                "source": "spring-xml",
+                "target": "springboot"
             }
             """;
     }
@@ -80,7 +82,7 @@ public class CreateXmlRuleCommand extends AbstractCommand {
                 "Detects XML content: " + xpath,
                 category,
                 effort,
-                List.of("xml", "configuration"),
+                buildLabels(params),
                 List.of(),
                 List.of(),
                 condition
