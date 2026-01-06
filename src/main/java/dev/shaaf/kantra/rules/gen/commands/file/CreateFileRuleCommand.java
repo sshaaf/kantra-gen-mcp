@@ -41,7 +41,9 @@ public class CreateFileRuleCommand extends AbstractCommand {
                 "filePattern": "applicationContext.xml",
                 "message": "Migrate XML configuration to Java config. Before: applicationContext.xml; After: @Configuration class",
                 "category": "MANDATORY",
-                "effort": 3
+                "effort": 3,
+                "source": "spring-xml",
+                "target": "springboot"
             }
             """;
     }
@@ -61,7 +63,7 @@ public class CreateFileRuleCommand extends AbstractCommand {
                 "Detects files matching: " + filePattern,
                 category,
                 effort,
-                List.of("file", "pattern"),
+                buildLabels(params),
                 List.of(),
                 List.of(),
                 condition

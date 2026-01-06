@@ -42,7 +42,9 @@ public class CreateFileContentRuleCommand extends AbstractCommand {
                 "contentPattern": "System\\\\.out\\\\.println",
                 "message": "Replace System.out.println with proper logging. Before: System.out.println(\\"Hello\\"); After: logger.info(\\"Hello\\");",
                 "category": "POTENTIAL",
-                "effort": 1
+                "effort": 1,
+                "source": "java-legacy",
+                "target": "java-modern"
             }
             """;
     }
@@ -63,7 +65,7 @@ public class CreateFileContentRuleCommand extends AbstractCommand {
                 "Detects content in " + filePattern + ": " + contentPattern,
                 category,
                 effort,
-                List.of("file-content", "pattern"),
+                buildLabels(params),
                 List.of(),
                 List.of(),
                 condition

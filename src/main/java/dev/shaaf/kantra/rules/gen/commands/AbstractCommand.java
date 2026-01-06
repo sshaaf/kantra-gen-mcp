@@ -9,6 +9,9 @@ import dev.shaaf.kantra.rules.gen.validation.RuleValidator;
 import io.quarkiverse.mcp.server.ToolCallException;
 import jakarta.inject.Inject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Base class for commands with common utilities.
  * Extend this class to get helper methods for parameter extraction and YAML serialization.
@@ -139,6 +142,29 @@ public abstract class AbstractCommand implements KantraCommand {
      */
     protected String toJson(Object result) throws Exception {
         return mapper.writeValueAsString(result);
+    }
+
+    /**
+     * Build Konveyor-formatted labels from source and target technologies.
+     * Labels follow the format: konveyor.io/source=<technology> and konveyor.io/target=<technology>
+     *
+     * @param params JSON parameters containing optional "source" and "target" fields
+     * @return List of properly formatted labels
+     */
+    protected List<String> buildLabels(JsonNode params) {
+        List<String> labels = new ArrayList<>();
+        
+        String source = optionalString(params, "source", null);
+        String target = optionalString(params, "target", null);
+        
+        if (source != null && !source.isBlank()) {
+            labels.add("konveyor.io/source=" + source.toLowerCase().trim());
+        }
+        if (target != null && !target.isBlank()) {
+            labels.add("konveyor.io/target=" + target.toLowerCase().trim());
+        }
+        
+        return labels;
     }
 }
 

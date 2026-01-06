@@ -44,7 +44,9 @@ public class CreateJavaRuleCommand extends AbstractCommand {
                 "location": "IMPORT",
                 "message": "ThreadPoolRejectedPolicy moved. Before: import org.apache.camel.ThreadPoolRejectedPolicy; After: import org.apache.camel.util.concurrent.ThreadPoolRejectedPolicy;",
                 "category": "MANDATORY",
-                "effort": 2
+                "effort": 2,
+                "source": "camel2",
+                "target": "camel3"
             }
             """;
     }
@@ -65,7 +67,7 @@ public class CreateJavaRuleCommand extends AbstractCommand {
                 "Detects Java " + location.toString().toLowerCase().replace("_", " ") + ": " + javaPattern,
                 category,
                 effort,
-                List.of("java", location.toString().toLowerCase().replace("_", "-")),
+                buildLabels(params),
                 List.of(),
                 List.of(),
                 condition

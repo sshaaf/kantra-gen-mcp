@@ -42,7 +42,9 @@ public class CreateJsonRuleCommand extends AbstractCommand {
                 "xpath": "$.config.deprecated",
                 "message": "Update deprecated JSON configuration. Before: 'deprecated': true; After: Remove deprecated field",
                 "category": "OPTIONAL",
-                "effort": 1
+                "effort": 1,
+                "source": "legacy-config",
+                "target": "modern-config"
             }
             """;
     }
@@ -66,7 +68,7 @@ public class CreateJsonRuleCommand extends AbstractCommand {
                 "Detects JSON content: " + xpath,
                 category,
                 effort,
-                List.of("json", "configuration"),
+                buildLabels(params),
                 List.of(),
                 List.of(),
                 condition
