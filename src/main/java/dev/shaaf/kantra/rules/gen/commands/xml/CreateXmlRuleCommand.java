@@ -83,6 +83,7 @@ public class CreateXmlRuleCommand extends AbstractCommand {
                 category,
                 effort,
                 buildLabels(params),
+                buildLinks(params),
                 List.of(),
                 List.of(),
                 condition

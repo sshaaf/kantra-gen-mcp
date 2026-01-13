@@ -39,14 +39,17 @@ public class CreateJavaRuleCommand extends AbstractCommand {
     public String getExampleParams() {
         return """
             {
-                "ruleID": "deprecated-thread-pool-policy",
-                "javaPattern": "org.apache.camel.ThreadPoolRejectedPolicy",
-                "location": "IMPORT",
-                "message": "ThreadPoolRejectedPolicy moved. Before: import org.apache.camel.ThreadPoolRejectedPolicy; After: import org.apache.camel.util.concurrent.ThreadPoolRejectedPolicy;",
+                "ruleID": "struts-action-to-spring-controller",
+                "javaPattern": "org.apache.struts.action.Action",
+                "location": "INHERITANCE",
+                "message": "Struts `Action` classes must be converted to Spring MVC `@Controller` classes.\\n\\n**Before (Struts Action):**\\n```java\\npublic class ListItemsAction extends Action {\\n    public ActionForward execute(...) { ... }\\n}\\n```\\n\\n**After (Spring Controller):**\\n```java\\n@Controller\\n@RequestMapping(\\"/items\\")\\npublic class ItemController {\\n    @GetMapping\\n    public String listItems(Model model) { ... }\\n}\\n```",
                 "category": "MANDATORY",
-                "effort": 2,
-                "source": "camel2",
-                "target": "camel3"
+                "effort": 5,
+                "source": "struts",
+                "target": "springboot",
+                "links": [
+                    {"title": "Spring MVC Controllers", "url": "https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-controller"}
+                ]
             }
             """;
     }
@@ -68,6 +71,7 @@ public class CreateJavaRuleCommand extends AbstractCommand {
                 category,
                 effort,
                 buildLabels(params),
+                buildLinks(params),
                 List.of(),
                 List.of(),
                 condition

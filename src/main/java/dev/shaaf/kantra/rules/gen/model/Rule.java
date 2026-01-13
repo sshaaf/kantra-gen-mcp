@@ -13,6 +13,7 @@ public record Rule(
         Category category,
         Integer effort,
         List<String> labels,
+        List<Link> links,
         List<String> tag,
         @JsonProperty("customVariable") List<CustomVariable> customVariables,
         Condition when
