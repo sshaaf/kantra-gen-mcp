@@ -1,0 +1,65 @@
+---
+- ruleID: "add-microprofile-config"
+  message: |
+    Use MicroProfile Config to externalize configuration for cloud-native deployments.
+
+    **Before (Hardcoded Config):**
+    ```java
+    public class MeetUpApiClient {
+        private String apiKey = "hardcoded-key";
+        private String baseUrl = "https://api.meetup.com";
+
+        public List<Group> getGroups() {
+            // Uses hardcoded values
+        }
+    }
+    ```
+
+    **After (MicroProfile Config):**
+    ```java
+    import org.eclipse.microprofile.config.inject.ConfigProperty;
+    import jakarta.inject.Inject;
+
+    @ApplicationScoped
+    public class MeetUpApiClient {
+        @Inject
+        @ConfigProperty(name = "meetup.api.key")
+        private String apiKey;
+
+        @Inject
+        @ConfigProperty(name = "meetup.api.url", defaultValue = "https://api.meetup.com")
+        private String baseUrl;
+
+        public List<Group> getGroups() {
+            // Uses injected config values
+        }
+    }
+    ```
+
+    **application.properties:**
+    ```properties
+    meetup.api.key=${MEETUP_API_KEY}
+    meetup.api.url=https://api.meetup.com
+    ```
+
+    **Benefits:**
+    - Environment-specific configuration
+    - Kubernetes ConfigMaps/Secrets support
+    - Default values with override capability
+  description: "Detects Java import: org.eclipse.microprofile.config.inject.ConfigProperty"
+  category: "optional"
+  effort: 1
+  labels:
+    - "konveyor.io/source=monolith"
+    - "konveyor.io/target=microprofile"
+  links:
+    - title: "Monolith to Microservices Guide"
+      url: "https://github.com/lasalazarr/guide-monolithic-to-microservices"
+    - title: "MicroProfile Config"
+      url: "https://microprofile.io/specifications/microprofile-config/"
+  tag: []
+  customVariable: []
+  when:
+    java.referenced:
+      pattern: "org.eclipse.microprofile.config.inject.ConfigProperty"
+      location: "IMPORT"

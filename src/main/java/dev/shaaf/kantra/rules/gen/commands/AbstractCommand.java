@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.shaaf.kantra.rules.gen.model.Category;
 import dev.shaaf.kantra.rules.gen.model.JavaLocation;
+import dev.shaaf.kantra.rules.gen.model.Link;
 import dev.shaaf.kantra.rules.gen.model.Rule;
 import dev.shaaf.kantra.rules.gen.validation.RuleValidator;
 import io.quarkiverse.mcp.server.ToolCallException;
@@ -165,6 +166,30 @@ public abstract class AbstractCommand implements KantraCommand {
         }
         
         return labels;
+    }
+
+    /**
+     * Build links list from optional parameters.
+     * Links can be provided as an array of objects with "title" and "url" fields.
+     *
+     * @param params JSON parameters containing optional "links" array
+     * @return List of Link objects
+     */
+    protected List<Link> buildLinks(JsonNode params) {
+        List<Link> links = new ArrayList<>();
+        
+        JsonNode linksNode = params.get("links");
+        if (linksNode != null && linksNode.isArray()) {
+            for (JsonNode linkNode : linksNode) {
+                String title = linkNode.has("title") ? linkNode.get("title").asText() : null;
+                String url = linkNode.has("url") ? linkNode.get("url").asText() : null;
+                if (title != null && url != null) {
+                    links.add(new Link(title, url));
+                }
+            }
+        }
+        
+        return links;
     }
 }
 

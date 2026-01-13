@@ -1,0 +1,62 @@
+---
+- ruleID: "ejb-singleton-to-cdi-applicationscoped"
+  message: |
+    Singleton Session Beans should be converted to CDI `@ApplicationScoped` beans in Quarkus.
+
+    **Before (Jakarta EE EJB):**
+    ```java
+    import jakarta.ejb.Singleton;
+    import jakarta.ejb.Startup;
+    import jakarta.annotation.PostConstruct;
+
+    @Singleton
+    @Startup
+    public class ApplicationConfig {
+        private Map<String, String> configData;
+
+        @PostConstruct
+        public void init() {
+            configData = loadConfiguration();
+        }
+    }
+    ```
+
+    **After (Quarkus CDI):**
+    ```java
+    import jakarta.enterprise.context.ApplicationScoped;
+    import io.quarkus.runtime.Startup;
+    import jakarta.annotation.PostConstruct;
+
+    @ApplicationScoped
+    @Startup
+    public class ApplicationConfig {
+        private Map<String, String> configData;
+
+        @PostConstruct
+        public void init() {
+            configData = loadConfiguration();
+        }
+    }
+    ```
+
+    **Key Changes:**
+    - Replace `@jakarta.ejb.Singleton` with `@ApplicationScoped`
+    - Replace `@jakarta.ejb.Startup` with `@io.quarkus.runtime.Startup` for eager initialization
+    - `@PostConstruct` works the same way
+  description: "Detects Java annotation: jakarta.ejb.Singleton"
+  category: "mandatory"
+  effort: 1
+  labels:
+    - "konveyor.io/source=jakarta-ee"
+    - "konveyor.io/target=quarkus"
+  links:
+    - title: "EJB to Quarkus Migration Guide"
+      url: "https://www.the-main-thread.com/p/from-heavyweight-to-hyperspeed-your"
+    - title: "Quarkus CDI Reference"
+      url: "https://quarkus.io/guides/cdi-reference"
+  tag: []
+  customVariable: []
+  when:
+    java.referenced:
+      pattern: "jakarta.ejb.Singleton"
+      location: "ANNOTATION"

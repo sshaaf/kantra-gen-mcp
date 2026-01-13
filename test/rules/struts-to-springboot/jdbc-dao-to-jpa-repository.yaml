@@ -1,0 +1,75 @@
+---
+- ruleID: "jdbc-dao-to-jpa-repository"
+  message: |
+    JDBC-based DAOs should be migrated to Spring Data JPA Repositories.
+
+    **Before (JDBC DAO):**
+    ```java
+    public class AccountDAO {
+        public Account findById(Long id) {
+            String sql = "SELECT * FROM accounts WHERE id = ?";
+            try (Connection conn = getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setLong(1, id);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    return mapRowToAccount(rs);
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            return null;
+        }
+    }
+    ```
+
+    **After (Spring Data JPA):**
+    ```java
+    // Entity
+    @Entity
+    @Table(name = "accounts")
+    public class Account {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+
+        @Column(nullable = false)
+        private String accountNumber;
+
+        private BigDecimal balance;
+    }
+
+    // Repository
+    public interface AccountRepository extends JpaRepository<Account, Long> {
+        Optional<Account> findByAccountNumber(String accountNumber);
+
+        @Query("SELECT a FROM Account a WHERE a.balance > :minBalance")
+        List<Account> findByMinBalance(@Param("minBalance") BigDecimal minBalance);
+    }
+    ```
+
+    **DAO Method to Repository:**
+    | JDBC DAO | Spring Data JPA |
+    |----------|------------------|
+    | `findById(id)` | `findById(id)` (built-in) |
+    | `findAll()` | `findAll()` (built-in) |
+    | `save(entity)` | `save(entity)` (built-in) |
+    | `delete(id)` | `deleteById(id)` (built-in) |
+    | Custom query | `@Query` or method naming |
+  description: "Detects Java import: java.sql.PreparedStatement"
+  category: "mandatory"
+  effort: 4
+  labels:
+    - "konveyor.io/source=struts"
+    - "konveyor.io/target=springboot"
+  links:
+    - title: "Struts to Spring Boot Migration Spec"
+      url: "https://github.com/migtools/getting-started/blob/main/struts-1.0/spec.md"
+    - title: "Spring Data JPA"
+      url: "https://docs.spring.io/spring-data/jpa/reference/"
+  tag: []
+  customVariable: []
+  when:
+    java.referenced:
+      pattern: "java.sql.PreparedStatement"
+      location: "IMPORT"

@@ -1,0 +1,59 @@
+---
+- ruleID: "struts-actionforward-to-view-name"
+  message: |
+    `ActionForward` return types must be replaced with String view names in Spring MVC.
+
+    **Before (Struts ActionForward):**
+    ```java
+    import org.apache.struts.action.ActionForward;
+
+    public ActionForward execute(ActionMapping mapping, ActionForm form,
+            HttpServletRequest request, HttpServletResponse response) {
+        try {
+            // business logic
+            return mapping.findForward("success");
+        } catch (Exception e) {
+            request.setAttribute("error", e.getMessage());
+            return mapping.findForward("error");
+        }
+    }
+    ```
+
+    **After (Spring MVC String):**
+    ```java
+    @GetMapping("/action")
+    public String handleRequest(Model model) {
+        try {
+            // business logic
+            return "success-view";  // View name string
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        }
+    }
+    ```
+
+    **Forward Mappings:**
+    | Struts | Spring MVC |
+    |--------|------------|
+    | `mapping.findForward("success")` | `return "viewName";` |
+    | `mapping.findForward("error")` | `return "error";` |
+    | `mapping.findForward("input")` | `return "form-view";` |
+    | Redirect forward | `return "redirect:/path";` |
+  description: "Detects Java import: org.apache.struts.action.ActionForward"
+  category: "mandatory"
+  effort: 2
+  labels:
+    - "konveyor.io/source=struts"
+    - "konveyor.io/target=springboot"
+  links:
+    - title: "Struts to Spring Boot Migration Spec"
+      url: "https://github.com/migtools/getting-started/blob/main/struts-1.0/spec.md"
+    - title: "Spring MVC View Resolution"
+      url: "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet/viewresolver.html"
+  tag: []
+  customVariable: []
+  when:
+    java.referenced:
+      pattern: "org.apache.struts.action.ActionForward"
+      location: "IMPORT"

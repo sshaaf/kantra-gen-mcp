@@ -1,0 +1,73 @@
+---
+- ruleID: "add-microprofile-health"
+  message: |
+    Add MicroProfile Health checks for Kubernetes readiness and liveness probes.
+
+    **Add Health Check Implementation:**
+    ```java
+    import org.eclipse.microprofile.health.HealthCheck;
+    import org.eclipse.microprofile.health.HealthCheckResponse;
+    import org.eclipse.microprofile.health.Readiness;
+    import org.eclipse.microprofile.health.Liveness;
+    import jakarta.enterprise.context.ApplicationScoped;
+
+    @Readiness
+    @ApplicationScoped
+    public class DatabaseHealthCheck implements HealthCheck {
+        @Override
+        public HealthCheckResponse call() {
+            boolean dbUp = checkDatabaseConnection();
+            return HealthCheckResponse
+                .named("database")
+                .status(dbUp)
+                .withData("connection", dbUp ? "OK" : "FAILED")
+                .build();
+        }
+    }
+
+    @Liveness
+    @ApplicationScoped
+    public class ServiceHealthCheck implements HealthCheck {
+        @Override
+        public HealthCheckResponse call() {
+            return HealthCheckResponse
+                .named("service")
+                .up()
+                .build();
+        }
+    }
+    ```
+
+    **Health Endpoints:**
+    - `/health` - All health checks
+    - `/health/ready` - Readiness probes
+    - `/health/live` - Liveness probes
+
+    **Kubernetes Integration:**
+    ```yaml
+    livenessProbe:
+      httpGet:
+        path: /health/live
+        port: 9080
+    readinessProbe:
+      httpGet:
+        path: /health/ready
+        port: 9080
+    ```
+  description: "Detects Java import: org.eclipse.microprofile.health.HealthCheck"
+  category: "optional"
+  effort: 2
+  labels:
+    - "konveyor.io/source=monolith"
+    - "konveyor.io/target=microprofile"
+  links:
+    - title: "Monolith to Microservices Guide"
+      url: "https://github.com/lasalazarr/guide-monolithic-to-microservices"
+    - title: "MicroProfile Health"
+      url: "https://microprofile.io/specifications/microprofile-health/"
+  tag: []
+  customVariable: []
+  when:
+    java.referenced:
+      pattern: "org.eclipse.microprofile.health.HealthCheck"
+      location: "IMPORT"

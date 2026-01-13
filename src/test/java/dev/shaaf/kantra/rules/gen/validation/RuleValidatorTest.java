@@ -76,6 +76,7 @@ public class RuleValidatorTest {
             List.of("konveyor.io/source=camel2", "konveyor.io/source=camel", 
                    "konveyor.io/target=camel3+", "konveyor.io/target=camel"),
             null,
+            null,
             List.of(),
             whenCondition
         );

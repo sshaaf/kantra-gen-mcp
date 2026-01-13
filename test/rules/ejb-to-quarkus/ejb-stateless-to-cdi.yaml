@@ -1,0 +1,60 @@
+---
+- ruleID: "ejb-stateless-to-cdi-applicationscoped"
+  message: |
+    Stateless Session Beans should be converted to CDI `@ApplicationScoped` beans in Quarkus.
+
+    **Before (Jakarta EE EJB):**
+    ```java
+    import jakarta.ejb.Stateless;
+    import jakarta.inject.Inject;
+
+    @Stateless
+    public class GreetingService {
+        @Inject
+        AnotherService anotherService;
+
+        public String greet(String name) {
+            return "Hello, " + name;
+        }
+    }
+    ```
+
+    **After (Quarkus CDI):**
+    ```java
+    import jakarta.enterprise.context.ApplicationScoped;
+    import jakarta.inject.Inject;
+    import jakarta.transaction.Transactional;
+
+    @ApplicationScoped
+    public class GreetingService {
+        @Inject
+        AnotherService anotherService;
+
+        @Transactional
+        public String greet(String name) {
+            return "Hello, " + name;
+        }
+    }
+    ```
+
+    **Key Changes:**
+    - Replace `@Stateless` with `@ApplicationScoped`
+    - Add `@Transactional` if transaction management is needed
+    - `@Inject` and lifecycle callbacks (`@PostConstruct`, `@PreDestroy`) work the same
+  description: "Detects Java annotation: jakarta.ejb.Stateless"
+  category: "mandatory"
+  effort: 1
+  labels:
+    - "konveyor.io/source=jakarta-ee"
+    - "konveyor.io/target=quarkus"
+  links:
+    - title: "EJB to Quarkus Migration Guide"
+      url: "https://www.the-main-thread.com/p/from-heavyweight-to-hyperspeed-your"
+    - title: "Quarkus CDI Reference"
+      url: "https://quarkus.io/guides/cdi-reference"
+  tag: []
+  customVariable: []
+  when:
+    java.referenced:
+      pattern: "jakarta.ejb.Stateless"
+      location: "ANNOTATION"
