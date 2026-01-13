@@ -1,4 +1,4 @@
-[![Build and Push Backend](https://github.com/sshaaf/kantra-gen-mcp/actions/workflows/build-and-push.yml/badge.svg)](https://github.com/sshaaf/kantra-gen-mcp/actions/workflows/build-and-push.yml)
+[![Build](https://github.com/sshaaf/kantra-gen-mcp/actions/workflows/build.yml/badge.svg)](https://github.com/sshaaf/kantra-gen-mcp/actions/workflows/build.yml)
 [![Java 21](https://img.shields.io/badge/Java-21-blue.svg)](https://openjdk.org/projects/jdk/21/)
 [![Maven 3](https://img.shields.io/badge/Maven-3-green.svg)](https://maven.apache.org/)
 [![Quarkus 3](https://img.shields.io/badge/Quarkus-3-blue.svg)](https://quarkus.io/)
