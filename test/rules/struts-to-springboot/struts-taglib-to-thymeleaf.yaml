@@ -1,0 +1,67 @@
+---
+- ruleID: "struts-taglib-in-jsp"
+  message: |
+    Struts taglibs in JSP files must be migrated to Thymeleaf templates.
+
+    **Before (JSP with Struts Tags):**
+    ```jsp
+    <%@ taglib uri="http://struts.apache.org/tags-html" prefix="html" %>
+    <%@ taglib uri="http://struts.apache.org/tags-bean" prefix="bean" %>
+    <%@ taglib uri="http://struts.apache.org/tags-logic" prefix="logic" %>
+
+    <html:form action="/account/save">
+        <html:text property="accountNumber"/>
+        <html:errors property="accountNumber"/>
+        <html:submit value="Save"/>
+    </html:form>
+
+    <logic:iterate name="accounts" id="account">
+        <bean:write name="account" property="accountNumber"/>
+    </logic:iterate>
+    ```
+
+    **After (Thymeleaf):**
+    ```html
+    <!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org">
+    <body>
+        <form th:action="@{/account/save}" th:object="${accountDTO}" method="post">
+            <input type="text" th:field="*{accountNumber}"/>
+            <span th:if="${#fields.hasErrors('accountNumber')}"
+                  th:errors="*{accountNumber}" class="error"></span>
+            <button type="submit">Save</button>
+        </form>
+
+        <div th:each="account : ${accounts}">
+            <span th:text="${account.accountNumber}"></span>
+        </div>
+    </body>
+    </html>
+    ```
+
+    **Tag Conversion:**
+    | Struts Tag | Thymeleaf |
+    |------------|------------|
+    | `<html:form action>` | `<form th:action>` |
+    | `<html:text property>` | `<input th:field>` |
+    | `<html:errors>` | `th:errors` |
+    | `<logic:iterate>` | `th:each` |
+    | `<bean:write>` | `th:text` |
+    | `<logic:equal>` | `th:if` |
+  description: "Detects content in *.jsp: <%@\\s*taglib.*struts"
+  category: "mandatory"
+  effort: 4
+  labels:
+    - "konveyor.io/source=struts"
+    - "konveyor.io/target=springboot"
+  links:
+    - title: "Struts to Spring Boot Migration Spec"
+      url: "https://github.com/migtools/getting-started/blob/main/struts-1.0/spec.md"
+    - title: "Thymeleaf Documentation"
+      url: "https://www.thymeleaf.org/documentation.html"
+  tag: []
+  customVariable: []
+  when:
+    builtin.filecontent:
+      filePattern: "*.jsp"
+      pattern: "<%@\\s*taglib.*struts"

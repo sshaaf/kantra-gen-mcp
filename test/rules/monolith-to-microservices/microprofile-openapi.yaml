@@ -1,0 +1,64 @@
+---
+- ruleID: "add-microprofile-openapi"
+  message: |
+    Add MicroProfile OpenAPI annotations to document your microservice REST APIs.
+
+    **Before (No Documentation):**
+    ```java
+    @Path("/groups")
+    public class GroupResource {
+        @GET
+        public List<Group> allGroups() {
+            return groupService.allGroups();
+        }
+    }
+    ```
+
+    **After (With OpenAPI):**
+    ```java
+    import org.eclipse.microprofile.openapi.annotations.Operation;
+    import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+    import org.eclipse.microprofile.openapi.annotations.media.Content;
+    import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
+    @Path("/groups")
+    public class GroupResource {
+        @GET
+        @Operation(
+            summary = "Get all groups",
+            description = "Returns a list of all registered user groups"
+        )
+        @APIResponse(
+            responseCode = "200",
+            description = "List of groups",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = Group.class)
+            )
+        )
+        public List<Group> allGroups() {
+            return groupService.allGroups();
+        }
+    }
+    ```
+
+    **Access OpenAPI UI:**
+    - Swagger UI: `http://localhost:9080/openapi/ui/`
+    - OpenAPI spec: `http://localhost:9080/openapi`
+  description: "Detects Java import: org.eclipse.microprofile.openapi.annotations.Operation"
+  category: "optional"
+  effort: 1
+  labels:
+    - "konveyor.io/source=monolith"
+    - "konveyor.io/target=microprofile"
+  links:
+    - title: "Monolith to Microservices Guide"
+      url: "https://github.com/lasalazarr/guide-monolithic-to-microservices"
+    - title: "MicroProfile OpenAPI"
+      url: "https://microprofile.io/specifications/microprofile-open-api/"
+  tag: []
+  customVariable: []
+  when:
+    java.referenced:
+      pattern: "org.eclipse.microprofile.openapi.annotations.Operation"
+      location: "IMPORT"

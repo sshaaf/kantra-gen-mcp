@@ -1,0 +1,63 @@
+---
+- ruleID: "struts-actionmapping-to-requestmapping"
+  message: |
+    `ActionMapping` configuration must be replaced with Spring's `@RequestMapping` annotations.
+
+    **Before (struts-config.xml + ActionMapping):**
+    ```xml
+    <!-- struts-config.xml -->
+    <action path="/account/list"
+            type="com.example.action.ListAccountsAction"
+            name="accountForm"
+            scope="request"
+            validate="false">
+        <forward name="success" path="/WEB-INF/jsp/accounts.jsp"/>
+        <forward name="error" path="/WEB-INF/jsp/error.jsp"/>
+    </action>
+    ```
+
+    ```java
+    // ListAccountsAction.java
+    public ActionForward execute(ActionMapping mapping, ...) {
+        return mapping.findForward("success");
+    }
+    ```
+
+    **After (Spring Annotations):**
+    ```java
+    @Controller
+    @RequestMapping("/account")
+    public class AccountController {
+
+        @GetMapping("/list")
+        public String listAccounts(Model model) {
+            // business logic
+            return "accounts";  // Thymeleaf template
+        }
+    }
+    ```
+
+    **Mapping Conversion:**
+    | struts-config.xml | Spring Annotation |
+    |-------------------|-------------------|
+    | `path="/account/list"` | `@RequestMapping("/account")` + `@GetMapping("/list")` |
+    | `method="POST"` | `@PostMapping` |
+    | `parameter="method=save"` | `@PostMapping("/save")` |
+    | `forward name="success"` | Return view name string |
+  description: "Detects Java import: org.apache.struts.action.ActionMapping"
+  category: "mandatory"
+  effort: 3
+  labels:
+    - "konveyor.io/source=struts"
+    - "konveyor.io/target=springboot"
+  links:
+    - title: "Struts to Spring Boot Migration Spec"
+      url: "https://github.com/migtools/getting-started/blob/main/struts-1.0/spec.md"
+    - title: "Spring Request Mapping"
+      url: "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-requestmapping.html"
+  tag: []
+  customVariable: []
+  when:
+    java.referenced:
+      pattern: "org.apache.struts.action.ActionMapping"
+      location: "IMPORT"
