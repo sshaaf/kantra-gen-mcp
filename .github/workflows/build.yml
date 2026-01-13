@@ -143,6 +143,11 @@ jobs:
             -Dquarkus.container-image.build=true \
             -Dquarkus.container-image.push=true \
             -Dquarkus.container-image.tag=${{ steps.sha.outputs.short }}
+            -Dquarkus.container-image.username=${{ secrets.QUAY_USERNAME }} \
+            -Dquarkus.container-image.password=${{ secrets.QUAY_PASSWORD }}
+        env:
+          QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
+          QUAY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}   
 
       - name: Summary
         if: github.event_name != 'pull_request'
