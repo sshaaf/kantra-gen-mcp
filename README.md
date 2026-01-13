@@ -10,70 +10,69 @@ A Model Context Protocol (MCP) server for Kantra rule generation.
 
 Examples 
 
-## Configurations
+## Running the Server
 
-### Claude Code
-You can add the keycloak server by adding the following to `claude_desktop_config`.
+### Using Native Binary
+```bash
+./kantra-rules-gen-linux-x64.bin
+# or on macOS
+./kantra-rules-gen-macos-arm64.bin
+```
 
-```yaml
+### Using Uber JAR
+```bash
+java -jar kantra-rules-gen.jar
+```
+
+### Using Quarkus Dev Mode
+```bash
+mvn quarkus:dev
+```
+
+The server runs on `http://localhost:8080` by default.
+
+## MCP Client Configuration
+
+### Cursor / VS Code
+Add to your `mcp.json`:
+```json
 {
   "mcpServers": {
-    "keycloak": {
-      "command": "<full path>/kantra-rules-gen-1.0.0-SNAPSHOT-runner",
-      "args": []
+    "kantra-gen-mcp": {
+      "url": "http://localhost:8080/mcp/sse"
     }
   }
 }
 ```
-### VSCode
-You can add the keycloak MCP server tools into VS Code by adding the following to your `mcp.json`.
 
-```yaml
-  "kantra_rules_gen": {
-    "type": "stdio",
-    "command": "<full path> kantra-rules-gen-1.0.0-SNAPSHOT-runner",
-    "args": [],
-
+### Claude Desktop
+Add to `claude_desktop_config.json`:
+```json
+{
+  "mcpServers": {
+    "kantra-gen-mcp": {
+      "url": "http://localhost:8080/mcp/sse"
+    }
+  }
+}
 ```
 
 ### Goose CLI
-
+Add to your Goose config:
 ```yaml
 extensions:
   kantra_rules_gen:
     display_name: Kantra Rules Gen MCP
     enabled: true
-    name: keycloak-mcp-server
+    name: kantra-gen-mcp
     timeout: 300
-    type: stdio
-    cmd: "<full path>kantra-rules-gen-1.0.0-SNAPSHOT-runner"
-    args: []
-
+    type: sse
+    uri: "http://localhost:8080/mcp/sse"
 ```
 
-### Uber Jar
-The examples above are for native binaries. however you can also use the uber-jar
-If using the uber jar change the `cmd` and `args` as follows
-```yaml
-    cmd|command: "java"
-    args: ["-jar", "path to jar"]
-```
-
-To build and use it with goose
-
-```
-mvn clean compile package -Dquarkus.package.jar.type=uber-jar
-goose session --with-extension="java -jar target/kantra-gen-mcp-1.0.0-SNAPSHOT-runner.jar"
-```
-
-## Using Quarkus dev mode. 
-```
-mvn quarkus:dev
-```
-configuration for mcp would look something like this
-```
-      "kantra-gen-mcp": {
-        "url": "http://localhost:8080/mcp/sse"
-      }
-```
+## Example Rules
+See [test/rules](test/rules) for example migration rules including:
+- EJB to Quarkus
+- Monolith to Microservices  
+- Struts to Spring Boot
 
