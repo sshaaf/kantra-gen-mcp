@@ -128,15 +128,21 @@ jobs:
             -Dquarkus.container-image.build=true \
             -Dquarkus.container-image.push=false
 
+      - name: Login to Quay.io
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+
       - name: Build and Push Container
         if: github.event_name != 'pull_request'
         run: |
           mvn -B clean package -DskipTests \
             -Dquarkus.container-image.build=true \
             -Dquarkus.container-image.push=true \
-            -Dquarkus.container-image.tag=${{ steps.sha.outputs.short }} \
-            -Dquarkus.container-image.username=${{ secrets.QUAY_USERNAME }} \
-            -Dquarkus.container-image.password=${{ secrets.QUAY_PASSWORD }}
+            -Dquarkus.container-image.tag=${{ steps.sha.outputs.short }}
 
       - name: Summary
         if: github.event_name != 'pull_request'
