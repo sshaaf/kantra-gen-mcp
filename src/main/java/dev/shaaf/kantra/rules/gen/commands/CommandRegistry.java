@@ -114,6 +114,7 @@ public class CommandRegistry {
         if (name.contains("XML")) return "XML Rules";
         if (name.contains("JSON")) return "JSON Rules";
         if (name.contains("FILE") || name.contains("TAGS")) return "Built-in Rules";
+        if (name.contains("RULESET")) return "Ruleset Operations";
         if (name.contains("VALIDATE") || name.contains("HELP") || name.contains("COMBINE")) return "Utilities";
         return "Other";
     }

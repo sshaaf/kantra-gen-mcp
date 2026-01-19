@@ -40,6 +40,10 @@ public enum KantraOperation {
     VALIDATE_RULE,
     GET_HELP,
     COMBINE_WITH_AND,
-    COMBINE_WITH_OR
+    COMBINE_WITH_OR,
+
+    // Ruleset Operations
+    CREATE_RULESET,
+    VALIDATE_RULESET
 }
 
