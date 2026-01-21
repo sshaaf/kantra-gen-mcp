@@ -10,11 +10,14 @@ import dev.shaaf.kantra.rules.gen.model.JavaReferencedCondition;
 import dev.shaaf.kantra.rules.gen.model.Rule;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Creates a Kantra rule to detect Java class/method usage.
  * This is the primary Java rule command supporting all JavaLocation types.
+ * 
+ * Supports optional `annotated` field for matching annotations with specific element values.
  */
 @ApplicationScoped
 @RegisteredCommand
@@ -32,7 +35,8 @@ public class CreateJavaRuleCommand extends AbstractCommand {
 
     @Override
     public String getDescription() {
-        return "Create a Kantra rule to detect Java class usage (deprecated classes, method calls, annotations, etc.)";
+        return "Create a Kantra rule to detect Java class usage (deprecated classes, method calls, annotations, etc.). " +
+               "For ANNOTATION location, you can optionally specify 'annotated' with 'elements' to match specific annotation values.";
     }
 
     @Override
@@ -42,14 +46,20 @@ public class CreateJavaRuleCommand extends AbstractCommand {
                 "ruleID": "struts-action-to-spring-controller",
                 "javaPattern": "org.apache.struts.action.Action",
                 "location": "INHERITANCE",
-                "message": "Struts `Action` classes must be converted to Spring MVC `@Controller` classes.\\n\\n**Before (Struts Action):**\\n```java\\npublic class ListItemsAction extends Action {\\n    public ActionForward execute(...) { ... }\\n}\\n```\\n\\n**After (Spring Controller):**\\n```java\\n@Controller\\n@RequestMapping(\\"/items\\")\\npublic class ItemController {\\n    @GetMapping\\n    public String listItems(Model model) { ... }\\n}\\n```",
+                "message": "Struts `Action` classes must be converted to Spring MVC `@Controller` classes.",
                 "category": "MANDATORY",
                 "effort": 5,
                 "source": "struts",
                 "target": "springboot",
                 "links": [
                     {"title": "Spring MVC Controllers", "url": "https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-controller"}
-                ]
+                ],
+                "annotated": {
+                    "pattern": "optional-pattern-for-annotated",
+                    "elements": [
+                        {"name": "value", "value": ".*\\\\/$"}
+                    ]
+                }
             }
             """;
     }
@@ -63,7 +73,16 @@ public class CreateJavaRuleCommand extends AbstractCommand {
         Category category = requireCategory(params, "category");
         int effort = requireInt(params, "effort");
 
-        JavaReferencedCondition condition = new JavaReferencedCondition(javaPattern, location.toString());
+        // Build the annotated condition if provided
+        JavaReferencedCondition.Annotated annotated = buildAnnotated(params);
+
+        JavaReferencedCondition condition;
+        if (annotated != null) {
+            condition = new JavaReferencedCondition(javaPattern, location.toString(), annotated);
+        } else {
+            condition = new JavaReferencedCondition(javaPattern, location.toString());
+        }
+        
         Rule rule = new Rule(
                 ruleID,
                 message,
@@ -77,6 +96,53 @@ public class CreateJavaRuleCommand extends AbstractCommand {
                 condition
         );
         return toYaml(rule);
+    }
+    
+    /**
+     * Build the Annotated condition from JSON parameters.
+     * Expected format:
+     * {
+     *   "annotated": {
+     *     "pattern": "optional-pattern",
+     *     "elements": [
+     *       {"name": "value", "value": ".*\\/$"}
+     *     ]
+     *   }
+     * }
+     * 
+     * @param params JSON parameters
+     * @return Annotated object or null if not provided
+     */
+    private JavaReferencedCondition.Annotated buildAnnotated(JsonNode params) {
+        JsonNode annotatedNode = params.get("annotated");
+        if (annotatedNode == null || annotatedNode.isNull()) {
+            return null;
+        }
+        
+        String pattern = null;
+        if (annotatedNode.has("pattern") && !annotatedNode.get("pattern").isNull()) {
+            pattern = annotatedNode.get("pattern").asText();
+        }
+        
+        List<JavaReferencedCondition.Element> elements = null;
+        JsonNode elementsNode = annotatedNode.get("elements");
+        if (elementsNode != null && elementsNode.isArray()) {
+            elements = new ArrayList<>();
+            for (JsonNode elementNode : elementsNode) {
+                String name = elementNode.has("name") ? elementNode.get("name").asText() : null;
+                String value = elementNode.has("value") ? elementNode.get("value").asText() : null;
+                if (name != null || value != null) {
+                    elements.add(new JavaReferencedCondition.Element(name, value));
+                }
+            }
+        }
+        
+        // Only return Annotated if we have at least pattern or elements
+        if (pattern != null || (elements != null && !elements.isEmpty())) {
+            return new JavaReferencedCondition.Annotated(pattern, elements);
+        }
+        
+        return null;
     }
 }
 
