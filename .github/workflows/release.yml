@@ -39,10 +39,11 @@ jobs:
       - name: Prepare release assets
         run: |
           cd artifacts
-          cp scribe-linux-x64/scribe-*-runner scribe-linux-x64.bin
-          cp scribe-macos/scribe-*-runner scribe-macos-arm64.bin
-          cp scribe-windows-x64/scribe-*-runner.exe scribe-windows-x64.exe
-          cp scribe-uber-jar/scribe-*-runner.jar scribe.jar
+          # Use flexible glob patterns to handle any artifact naming
+          cp scribe-linux-x64/*-runner scribe-linux-x64.bin
+          cp scribe-macos/*-runner scribe-macos-arm64.bin
+          cp scribe-windows-x64/*-runner.exe scribe-windows-x64.exe
+          cp scribe-uber-jar/*-runner.jar scribe.jar
           ls -la *.bin *.exe *.jar
 
       - name: Create Release
