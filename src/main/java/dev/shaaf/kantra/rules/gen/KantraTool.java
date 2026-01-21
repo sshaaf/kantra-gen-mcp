@@ -45,7 +45,8 @@ public class KantraTool {
      * @param params    JSON string containing the parameters for the operation
      * @return YAML rule string or result message from the operation
      */
-    @Tool(description = "Execute Kantra rule generation operations. " +
+    @Tool(description = "Constructs Konveyor Kantra static analysis rules for application migration. capable of synthesizing custom YAML rulesets for discovering specific code patterns." +
+            "Use this tool to create granular rules that pinpoint explicitly defined patterns in the codebase." +
             "Creates migration rules for Java, file content, XML, and JSON patterns. " +
             "Pass the operation type and parameters as JSON. " +
             "Java ops: CREATE_JAVA_CLASS_RULE (supports all JavaLocation types: IMPORT, CLASS, METHOD_CALL, CONSTRUCTOR_CALL, ANNOTATION, FIELD, METHOD, INHERITANCE, IMPLEMENTS_TYPE, ENUM, RETURN_TYPE, VARIABLE_DECLARATION, TYPE, PACKAGE); " +
@@ -54,7 +55,7 @@ public class KantraTool {
             "JSON ops: CREATE_JSON_RULE; " +
             "Utility ops: VALIDATE_RULE, GET_HELP")
     public String executeKantraOperation(
-            @ToolArg(description = "The operation to perform (e.g., CREATE_JAVA_CLASS_RULE, CREATE_FILE_CONTENT_RULE, CREATE_XML_RULE, VALIDATE_RULE, GET_HELP)")
+            @ToolArg(description = "The operation to perform (e.g., CREATE_JAVA_CLASS_RULE, CREATE_FILE_CONTENT_RULE, CREATE_XML_RULE, VALIDATE_RULE, GET_HELP), Be as specific as possible when choosing the operation and the parameters.")
             KantraOperation operation,
             @ToolArg(description = "JSON object containing operation parameters. " +
                     "For CREATE_JAVA_CLASS_RULE: {ruleID, javaPattern, location (IMPORT/CLASS/METHOD_CALL/etc), message, category (MANDATORY/OPTIONAL/POTENTIAL), effort (1-5)}. if location is ANNOTATION, you can also provide an annotated condition. " +
