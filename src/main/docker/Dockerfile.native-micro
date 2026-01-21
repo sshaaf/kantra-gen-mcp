@@ -5,10 +5,10 @@
 # mvn package -Pnative -Dquarkus.native.container-build=true
 #
 # Build the image:
-# docker build -f src/main/docker/Dockerfile.native-micro -t quay.io/sshaaf/kantra-gen-mcp:native-micro .
+# docker build -f src/main/docker/Dockerfile.native-micro -t quay.io/sshaaf/scribe:native-micro .
 #
 # Run the container:
-# docker run -i --rm -p 8080:8080 quay.io/sshaaf/kantra-gen-mcp:native-micro
+# docker run -i --rm -p 8080:8080 quay.io/sshaaf/scribe:native-micro
 #
 ###
 

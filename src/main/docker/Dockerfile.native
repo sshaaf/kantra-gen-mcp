@@ -5,10 +5,10 @@
 # mvn package -Pnative
 #
 # Build the image:
-# docker build -f src/main/docker/Dockerfile.native -t quay.io/sshaaf/kantra-gen-mcp:native .
+# docker build -f src/main/docker/Dockerfile.native -t quay.io/sshaaf/scribe:native .
 #
 # Run the container:
-# docker run -i --rm -p 8080:8080 quay.io/sshaaf/kantra-gen-mcp:native
+# docker run -i --rm -p 8080:8080 quay.io/sshaaf/scribe:native
 #
 ###
 

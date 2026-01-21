@@ -39,10 +39,10 @@ jobs:
       - name: Prepare release assets
         run: |
           cd artifacts
-          cp kantra-rules-gen-linux-x64/kantra-gen-mcp-*-runner kantra-rules-gen-linux-x64.bin
-          cp kantra-rules-gen-macos/kantra-gen-mcp-*-runner kantra-rules-gen-macos-arm64.bin
-          cp kantra-rules-gen-windows-x64/kantra-gen-mcp-*-runner.exe kantra-rules-gen-windows-x64.exe
-          cp kantra-rules-gen-uber-jar/kantra-gen-mcp-*-runner.jar kantra-rules-gen.jar
+          cp scribe-linux-x64/scribe-*-runner scribe-linux-x64.bin
+          cp scribe-macos/scribe-*-runner scribe-macos-arm64.bin
+          cp scribe-windows-x64/scribe-*-runner.exe scribe-windows-x64.exe
+          cp scribe-uber-jar/scribe-*-runner.jar scribe.jar
           ls -la *.bin *.exe *.jar
 
       - name: Create Release
@@ -50,25 +50,25 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create ${{ inputs.tag }} \
-            artifacts/kantra-rules-gen-linux-x64.bin \
-            artifacts/kantra-rules-gen-macos-arm64.bin \
-            artifacts/kantra-rules-gen-windows-x64.exe \
-            artifacts/kantra-rules-gen.jar \
+            artifacts/scribe-linux-x64.bin \
+            artifacts/scribe-macos-arm64.bin \
+            artifacts/scribe-windows-x64.exe \
+            artifacts/scribe.jar \
             README.md \
             --title "${{ inputs.tag }}" \
-            --notes "## Kantra Rules Generator ${{ inputs.tag }}
+            --notes "## Scribe ${{ inputs.tag }}
 
           ### Downloads
           | Platform | File |
           |----------|------|
-          | Linux x64 | kantra-rules-gen-linux-x64.bin |
-          | macOS ARM64 | kantra-rules-gen-macos-arm64.bin |
-          | Windows x64 | kantra-rules-gen-windows-x64.exe |
-          | Uber JAR (Java 21+) | kantra-rules-gen.jar |
+          | Linux x64 | scribe-linux-x64.bin |
+          | macOS ARM64 | scribe-macos-arm64.bin |
+          | Windows x64 | scribe-windows-x64.exe |
+          | Uber JAR (Java 21+) | scribe.jar |
 
           ### Container
           \`\`\`bash
-          docker pull quay.io/sshaaf/kantra-rules-gen:latest
+          docker pull quay.io/sshaaf/scribe:latest
           \`\`\`
 
           ### Documentation

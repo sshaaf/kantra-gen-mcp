@@ -33,7 +33,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: kantra-rules-gen-uber-jar
+          name: scribe-uber-jar
           path: target/*-runner.jar
           retention-days: 30
 
@@ -55,7 +55,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: kantra-rules-gen-linux-x64
+          name: scribe-linux-x64
           path: target/*-runner
           retention-days: 30
 
@@ -77,7 +77,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: kantra-rules-gen-macos
+          name: scribe-macos
           path: target/*-runner
           retention-days: 30
 
@@ -99,7 +99,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: kantra-rules-gen-windows-x64
+          name: scribe-windows-x64
           path: target/*-runner.exe
           retention-days: 30
 
@@ -149,9 +149,9 @@ jobs:
         run: |
           echo "### 🐳 Container Image Pushed" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Image:** \`quay.io/sshaaf/kantra-rules-gen:${{ steps.sha.outputs.short }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** \`quay.io/sshaaf/scribe:${{ steps.sha.outputs.short }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "docker pull quay.io/sshaaf/kantra-rules-gen:${{ steps.sha.outputs.short }}" >> $GITHUB_STEP_SUMMARY
-          echo "docker pull quay.io/sshaaf/kantra-rules-gen:latest" >> $GITHUB_STEP_SUMMARY
+          echo "docker pull quay.io/sshaaf/scribe:${{ steps.sha.outputs.short }}" >> $GITHUB_STEP_SUMMARY
+          echo "docker pull quay.io/sshaaf/scribe:latest" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
